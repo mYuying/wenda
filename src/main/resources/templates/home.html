@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+</head>
+<body>
+<pre>
+    $!{value1}
+    $!{value2} ## !表示若变量不存在，则强制为空
+    ${value3}  ## 不加！，若变量不存在，则将变量以文本形式显示在页面上，不做变量的解析
+
+    colors: $!{colors}
+
+    #foreach($color in $colors)
+        This is Color $!{foreach.index}:$color,$!{foreach.count}
+    #end
+
+    #foreach($key in $map.keySet())
+        Number:$key,value:$map.get($key)
+    #end
+
+    #foreach($kv in $map.entrySet())
+        Number:$kv.key,value:$kv.value
+    #end
+
+    User:$!{user.name}
+    $!{user.description}
+    $!{user.getDescription()}
+
+    ##模板内部自定义变量
+    #set($title = "myy")
+    Title: $!{title}
+
+    ##引入外部文件 parse会对变量进行解析，include不对变量进行解析
+    #parse("header.html")
+
+    #include("header.html")
+
+    ##宏,有点类似于函数的定义，方便后面的调用
+    #macro(render_color,$index,$color)
+        Color Render Macro $index,$color
+    #end
+
+    #foreach($color in $colors)
+        #render_color($foreach.index,$color)
+    #end
+
+    #set($hello="hello")
+    #set($helloworld1 = "$!{hello} world")
+    $hello
+    $helloworld1
+
+    #set($helloworld2 = '$!{hello} world')
+    $helloworld2
+</pre>
+</body>
+</html>

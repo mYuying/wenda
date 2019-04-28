@@ -10,7 +10,7 @@ public class TestController {
 
     @RequestMapping("/fun1")
     public String test() {
-        return "Hello , dear myh !";
+        return "Hello , dear myh !haola ";
     }
 
     @RequestMapping("/fun2")
