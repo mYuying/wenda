@@ -26,7 +26,7 @@ public class LoginController {
     @RequestMapping(path = {"/reg/"}, method = {RequestMethod.POST})
     public String reg(Model model, @RequestParam("username") String username,
                       @RequestParam("password") String password,
-                      @RequestParam("next") String next,
+                      @RequestParam(value="next", required = false) String next,
                       @RequestParam(value="rememberme", defaultValue = "false") boolean rememberme,
                       HttpServletResponse response) {
         try {
@@ -37,7 +37,7 @@ public class LoginController {
                 if (rememberme) {
                     cookie.setMaxAge(3600*24*5);
                 }
-                response.addCookie(cookie);
+                response.addCookie(cookie);//将ticket下发到浏览器cookie中
                 if (StringUtils.isNotBlank(next)) {
                     return "redirect:" + next;
                 }

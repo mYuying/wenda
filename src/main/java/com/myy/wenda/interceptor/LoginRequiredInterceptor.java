@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
+//访问某些页面需要登录的拦截器 （未登录注册的拦截器）
 public class LoginRequiredInterceptor implements HandlerInterceptor {
     @Autowired
     HostHolder hostHolder;

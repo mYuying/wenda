@@ -46,9 +46,9 @@ public class PassportInterceptor implements HandlerInterceptor {
                 return true;
             }
             User user = userDAO.selectById(loginTicket.getUserId());
-            hostHolder.setUser(user);
+            hostHolder.setUser(user); //将用户user放到上下文中,通过依赖注入，在controller中可直接获取到user信息；或者velocity页面渲染时，直接获取到user信息
         }
-        return true;
+        return true; //不能随便返回false，一旦返回false 整个网络请求就断掉不会再接着往下执行
     }
 
     @Override
