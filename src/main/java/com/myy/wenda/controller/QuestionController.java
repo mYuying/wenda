@@ -1,10 +1,10 @@
 package com.myy.wenda.controller;
 
+import com.myy.wenda.Service.CommentService;
 import com.myy.wenda.Service.QuestionService;
 import com.myy.wenda.Service.UserService;
 import com.myy.wenda.dao.QuestionDAO;
-import com.myy.wenda.model.HostHolder;
-import com.myy.wenda.model.Question;
+import com.myy.wenda.model.*;
 import com.myy.wenda.util.WendaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.ListView;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class QuestionController {
@@ -21,6 +24,9 @@ public class QuestionController {
 
     @Autowired
     QuestionService questionService;
+
+    @Autowired
+    CommentService commentService;
 
     @Autowired
     HostHolder hostHolder;
@@ -42,7 +48,7 @@ public class QuestionController {
                 question.setUserId(WendaUtil.ANONYMOUS_USERID);
 
                 //测试addquestion时 json串的code返回值为999时的情况
-                return WendaUtil.getJSONString(999);
+                //return WendaUtil.getJSONString(999);
             }else{
                 question.setUserId(hostHolder.getUser().getId());
             }
@@ -62,7 +68,15 @@ public class QuestionController {
     public String questionDetail(Model model,@PathVariable("qid") int qid){
         Question question = questionService.getById(qid);
         model.addAttribute("question",question);
-        model.addAttribute("user",userService.getUser(question.getUserId()));
+        List<Comment> commentList = commentService.getCommentsByEntity(qid, EntityType.ENTITY_QUESTION);
+        List<ViewObject> vos = new ArrayList<>();
+        for(Comment comment : commentList){
+            ViewObject vo = new ViewObject();
+            vo.set("comment",comment);
+            vo.set("user",userService.getUser(comment.getUserId()));
+            vos.add(vo);
+        }
+        model.addAttribute("comments",vos);
         return "detail";
    }
 }
