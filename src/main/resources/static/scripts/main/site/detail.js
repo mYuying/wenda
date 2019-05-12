@@ -21,6 +21,7 @@
     }
 
     function fVote(oEvent) {
+        console.log('enter fvote');
         var that = this;
         var oEl = $(oEvent.currentTarget);
         var oDv = oEl.closest('div.js-vote');

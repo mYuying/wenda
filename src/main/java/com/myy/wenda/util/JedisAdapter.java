@@ -19,6 +19,7 @@ public class JedisAdapter {
 
 
     private static final Logger logger = LoggerFactory.getLogger(JedisAdapter.class);
+
     @Autowired
     private JedisPool pool;
 
@@ -31,6 +32,7 @@ public class JedisAdapter {
 ////        JedisPool pool = (JedisPool)context.getBean("JedisPoolFactory");
 //
 //    }
+
     public long sadd(String key,String value){
         Jedis jedis = null;
         try{

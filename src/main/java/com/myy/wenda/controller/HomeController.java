@@ -1,7 +1,9 @@
 package com.myy.wenda.controller;
 
+import com.myy.wenda.Service.LikeService;
 import com.myy.wenda.Service.QuestionService;
 import com.myy.wenda.Service.UserService;
+import com.myy.wenda.model.EntityType;
 import com.myy.wenda.model.Question;
 import com.myy.wenda.model.ViewObject;
 import org.slf4j.Logger;
@@ -27,6 +29,7 @@ public class HomeController {
 
     @Autowired
     UserService userService;
+
 
     private List<ViewObject> getQuestions(int userId,int offset,int limit){
         List<Question> questionList = questionService.getLastedQuestions(userId,offset,limit);
