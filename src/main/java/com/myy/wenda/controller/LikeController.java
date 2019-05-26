@@ -2,6 +2,9 @@ package com.myy.wenda.controller;
 
 import com.myy.wenda.Service.CommentService;
 import com.myy.wenda.Service.LikeService;
+import com.myy.wenda.asyn.EventModel;
+import com.myy.wenda.asyn.EventProducer;
+import com.myy.wenda.asyn.EventType;
 import com.myy.wenda.model.Comment;
 import com.myy.wenda.model.EntityType;
 import com.myy.wenda.model.HostHolder;
@@ -24,6 +27,8 @@ public class LikeController {
     @Autowired
     CommentService commentService;
 
+    @Autowired
+    EventProducer eventProducer;
 
     @RequestMapping(path = {"/like"}, method = {RequestMethod.POST})
     @ResponseBody
@@ -33,6 +38,11 @@ public class LikeController {
         }
 
         Comment comment = commentService.getCommentById(commentId);
+
+        eventProducer.fireEvent(new EventModel(EventType.LIKE)
+                .setActorId(hostHolder.getUser().getId()).setEntityId(commentId)
+                .setEntityType(EntityType.ENTITY_COMMENT).setEntityOwnerId(comment.getUserId())
+                .setExt("questionId", String.valueOf(comment.getEntityId())));
 
         long likeCount = likeService.like(hostHolder.getUser().getId(), EntityType.ENTITY_COMMENT, commentId);
         return WendaUtil.getJSONString(0, String.valueOf(likeCount));

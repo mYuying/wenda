@@ -1,6 +1,9 @@
 package com.myy.wenda.controller;
 
 import com.myy.wenda.Service.UserService;
+import com.myy.wenda.asyn.EventModel;
+import com.myy.wenda.asyn.EventProducer;
+import com.myy.wenda.asyn.EventType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +25,9 @@ public class LoginController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    EventProducer eventProducer;
 
     @RequestMapping(path = {"/reg/"}, method = {RequestMethod.POST})
     public String reg(Model model, @RequestParam("username") String username,
@@ -75,6 +81,11 @@ public class LoginController {
                     cookie.setMaxAge(3600*24*5);
                 }
                 response.addCookie(cookie);
+
+//                eventProducer.fireEvent(new EventModel(EventType.LOGIN)
+//                        .setExt("username", username).setExt("email", "18710893075@163.com")
+//                        .setActorId(Integer.parseInt(map.get("userId"))));
+
                 if (StringUtils.isNotBlank(next)) {
                     return "redirect:" + next;
                 }
