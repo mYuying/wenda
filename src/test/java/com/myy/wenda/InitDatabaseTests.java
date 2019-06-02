@@ -1,9 +1,12 @@
 package com.myy.wenda;
 
+import com.myy.wenda.Service.FollowService;
 import com.myy.wenda.dao.QuestionDAO;
 import com.myy.wenda.dao.UserDAO;
+import com.myy.wenda.model.EntityType;
 import com.myy.wenda.model.Question;
 import com.myy.wenda.model.User;
+import com.myy.wenda.util.JedisAdapter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,9 +28,17 @@ public class InitDatabaseTests {
     @Autowired
     QuestionDAO questionDAO;
 
+    @Autowired
+    FollowService followService;
+
+    @Autowired
+    JedisAdapter jedisAdapter;
+
     @Test
     public void contextLoads(){
         Random random = new Random();
+        jedisAdapter.getJedis().flushDB();
+
         for(int i=0;i<11;i++){
             User user = new User();
            // user.setId(i+1); user表中ID没有设置自增时，必须要有这个字段
@@ -39,6 +50,10 @@ public class InitDatabaseTests {
 
             user.setPassword("newpassword");
             userDAO.updatePassword(user);
+
+            for (int j = 1; j < i; ++j) {
+                followService.follow(j, EntityType.ENTITY_USER, i);
+            }
 
             Question question = new Question();
             question.setCommentCount(i);

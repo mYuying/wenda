@@ -1,11 +1,7 @@
 package com.myy.wenda.controller;
 
-import com.myy.wenda.Service.LikeService;
-import com.myy.wenda.Service.QuestionService;
-import com.myy.wenda.Service.UserService;
-import com.myy.wenda.model.EntityType;
-import com.myy.wenda.model.Question;
-import com.myy.wenda.model.ViewObject;
+import com.myy.wenda.Service.*;
+import com.myy.wenda.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +26,18 @@ public class HomeController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    FollowService followService;
+
+    @Autowired
+    CommentService commentService;
+
+    @Autowired
+    HostHolder hostHolder;
+
+    @Autowired
+    LikeService likeService;
+
 
     private List<ViewObject> getQuestions(int userId,int offset,int limit){
         List<Question> questionList = questionService.getLastedQuestions(userId,offset,limit);
@@ -37,6 +45,7 @@ public class HomeController {
         for(Question question : questionList){
             ViewObject vo  = new ViewObject();
             vo.set("question",question);
+            vo.set("followCount", followService.getFollowerCount(EntityType.ENTITY_QUESTION, question.getId()));
             vo.set("user",userService.getUser(question.getUserId()));
             vos.add(vo);
         }
@@ -54,7 +63,20 @@ public class HomeController {
     public String userIndex(Model model,
                             @PathVariable("userId") int userId){
         model.addAttribute("vos",getQuestions(userId,0,10));
-        return "index";
+
+        User user = userService.getUser(userId);
+        ViewObject vo = new ViewObject();
+        vo.set("user", user);
+        vo.set("commentCount", commentService.getUserCommentCount(userId));
+        vo.set("followerCount", followService.getFollowerCount(EntityType.ENTITY_USER, userId));
+        vo.set("followeeCount", followService.getFolloweeCount(userId, EntityType.ENTITY_USER));
+        if (hostHolder.getUser() != null) {
+            vo.set("followed", followService.isFollower(hostHolder.getUser().getId(), EntityType.ENTITY_USER, userId));
+        } else {
+            vo.set("followed", false);
+        }
+        model.addAttribute("profileUser", vo);
+        return "profile";
     }
 
 

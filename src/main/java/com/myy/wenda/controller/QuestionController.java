@@ -1,9 +1,6 @@
 package com.myy.wenda.controller;
 
-import com.myy.wenda.Service.CommentService;
-import com.myy.wenda.Service.LikeService;
-import com.myy.wenda.Service.QuestionService;
-import com.myy.wenda.Service.UserService;
+import com.myy.wenda.Service.*;
 import com.myy.wenda.dao.QuestionDAO;
 import com.myy.wenda.model.*;
 import com.myy.wenda.util.WendaUtil;
@@ -34,6 +31,10 @@ public class QuestionController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    FollowService followService;
+
 
     @Autowired
     LikeService likeService;
@@ -72,6 +73,7 @@ public class QuestionController {
     public String questionDetail(Model model,@PathVariable("qid") int qid){
         Question question = questionService.getById(qid);
         model.addAttribute("question",question);
+
         List<Comment> commentList = commentService.getCommentsByEntity(qid, EntityType.ENTITY_QUESTION);
         List<ViewObject> vos = new ArrayList<>();
         for(Comment comment : commentList){
@@ -88,6 +90,28 @@ public class QuestionController {
             vos.add(vo);
         }
         model.addAttribute("comments",vos);
+
+       List<ViewObject> followUsers = new ArrayList<ViewObject>();
+       // 获取关注的用户信息
+       List<Integer> users = followService.getFollowers(EntityType.ENTITY_QUESTION, qid, 20);
+       for (Integer userId : users) {
+           ViewObject vo = new ViewObject();
+           User u = userService.getUser(userId);
+           if (u == null) {
+               continue;
+           }
+           vo.set("name", u.getName());
+           vo.set("headUrl", u.getHeadUrl());
+           vo.set("id", u.getId());
+           followUsers.add(vo);
+       }
+       model.addAttribute("followUsers", followUsers);
+       if (hostHolder.getUser() != null) {
+           model.addAttribute("followed", followService.isFollower(hostHolder.getUser().getId(), EntityType.ENTITY_QUESTION, qid));
+       } else {
+           model.addAttribute("followed", false);
+       }
+
         return "detail";
    }
 }
